@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shadow Boxing Math</title>
+
+<style>
+  /* --- Body and layout --- */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    margin: 0;
+  }
+
+  /* --- Main container --- */
+  .container {
+    background: #ffffffcc;
+    padding: 30px 40px;
+    border-radius: 20px;
+    width: 70%;
+    max-width: 650px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  h1, h2, h3 {
+    margin: 10px 0;
+  }
+
+  input {
+    padding: 12px;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    width: 60%;
+  }
+
+  button {
+    padding: 12px 24px;
+    font-size: 1em;
+    margin: 10px 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    transition: all 0.2s;
+    font-weight: bold;
+  }
+
+  button:hover:not(:disabled) {
+    transform: scale(1.05);
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* --- Game arrows --- */
+  .arrow-btn {
+    font-size: 2em;
+    padding: 20px 25px;
+    margin: 5px;
+    border-radius: 10px;
+    border: 2px solid #667eea;
+    background: #e0e7ff;
+    transition: all 0.2s;
+  }
+
+  .arrow-btn:hover:not(.disabled) {
+    background: #667eea;
+    color: white;
+    transform: scale(1.1);
+  }
+
+  .arrow-btn.selected {
+    background: #764ba2;
+    color: white;
+  }
+
+  .arrow-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* --- Answer submit button --- */
+  #submitAnswerBtn {
+    margin-top: 15px;
+    padding: 12px 28px;
+    font-size: 1.1em;
+    background: #667eea;
+    color: white;
+    border-radius: 12px;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  #submitAnswerBtn:hover:not(:disabled) {
+    background: #5a67d8;
+    transform: scale(1.05);
+  }
+
+  /* --- Status & streak --- */
+  #statusDisplay {
+    margin-top: 15px;
+    font-size: 1.4em;
+    font-weight: bold;
+    min-height: 30px;
+  }
+
+  #streakDisplay {
+    margin-top: 10px;
+    font-size: 1.2em;
+    color: #764ba2;
+    font-weight: bold;
+  }
+
+  #timerDisplay {
+    margin-top: 5px;
+    font-size: 1.1em;
+  }
+
+  /* --- Leaderboard sidebar --- */
+  #leaderboard {
+    background: white;
+    padding: 25px 20px;
+    border-radius: 20px;
+    width: 250px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    height: fit-content;
+    min-width: 220px;
+    position: sticky;
+    top: 20px;
+  }
+
+  #leaderboard h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #667eea;
+  }
+
+  #leaderboard ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  #leaderboard li {
+    padding: 8px 0;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
+    font-size: 1em;
+    color: #333;
+  }
+
+  /* --- Name and menu screens --- */
+  #nameScreen, #menuScreen, #gameScreen, #gameOverScreen {
+    transition: all 0.3s ease;
+  }
+
+  #gameOverScreen h2 {
+    color: #764ba2;
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Main game container -->
+<div class="container">
+
+  <!-- NAME SCREEN -->
+  <div id="nameScreen">
+    <h2>Enter Your Name</h2>
+    <input id="nameInput" placeholder="Your name"/>
+    <br>
+    <button id="nameBtn">Start</button>
+  </div>
+
+  <!-- MENU -->
+  <div id="menuScreen" class="hidden">
+    <h1>Shadow Boxing Math</h1>
+    <button id="createBtn">Create Game</button>
+    <button id="randomBtn">Random Match</button>
+
+    <div id="joinGroup" class="hidden">
+      <input id="codeInput" maxlength="5" placeholder="Game Code"/>
+      <button id="joinBtn">Join</button>
+    </div>
+
+    <button id="showJoinBtn">Join Game</button>
+
+    <div id="codeDisplay"></div>
+    <div id="waitingMsg" class="hidden">Waiting for opponent...</div>
+    <div id="errorMsg"></div>
+  </div>
+
+  <!-- GAME -->
+  <div id="gameScreen" class="hidden">
+    <h2 id="roleDisplay"></h2>
+    <h1 id="questionDisplay"></h1>
+
+    <input id="answerInput" type="number" placeholder="Answer" />
+    <br>
+    <button id="submitAnswerBtn" disabled>Submit Answer</button>
+
+    <div>
+      <button class="arrow-btn disabled" data-dir="up">↑</button>
+      <button class="arrow-btn disabled" data-dir="down">↓</button>
+      <button class="arrow-btn disabled" data-dir="left">←</button>
+      <button class="arrow-btn disabled" data-dir="right">→</button>
+    </div>
+
+    <div id="timerDisplay"></div>
+    <div id="streakDisplay"></div>
+    <div id="statusDisplay"></div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="gameOverScreen" class="hidden">
+    <h2 id="winnerText"></h2>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
+
+</div>
+
+<!-- Leaderboard sidebar -->
+<div id="leaderboard">
+  <h3>Top 5 Players</h3>
+  <ul id="leaderboardList">
+    <li>Loading...</li>
+  </ul>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="client.js"></script>
+</body>
+</html>
