@@ -243,14 +243,16 @@ io.on('connection', socket => {
 
   // --- Answer ---
   socket.on('answer', ({ val, code }) => {
-    const game = games[code]; if(!game||!game.roundActive) return;
+    const game = games[code]; 
+    if(!game||!game.roundActive) return;
     game.answers[socket.id] = parseInt(val);
     checkEarlyResolve(code);
   });
 
   // --- Direction ---
   socket.on('direction', ({ dir, code }) => {
-    const game = games[code]; if(!game||!game.roundActive) return;
+    const game = games[code]; 
+    if(!game||!game.roundActive) return;
     const attacker = game.players[game.attackerIndex];
     const defender = game.players[1 - game.attackerIndex];
 
@@ -277,5 +279,5 @@ io.on('connection', socket => {
 });
 
 // --- Server start ---
-const PORT = process.env.PORT||3000;
-server.listen(PORT,()=>console.log(`Server running on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
