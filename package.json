@@ -2,6 +2,7 @@
   "name": "shadow-boxing-math",
   "version": "1.0.0",
   "private": true,
+  "description": "Multiplayer math game with streaks and tiers, built with Node.js and Socket.IO",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,5 +11,9 @@
   "dependencies": {
     "express": "^4.18.2",
     "socket.io": "^4.8.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Katakuris-Left-Toe/shadow-boxing-math.git"
   }
 }
