@@ -163,6 +163,18 @@
     color: #333;
   }
 
+  /* --- Rules list --- */
+  #rulesList {
+    list-style: disc inside;
+    font-size: 0.9em;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  #rulesList li {
+    margin-bottom: 6px;
+  }
+
   /* --- Name and menu screens --- */
   #nameScreen, #menuScreen, #gameScreen, #gameOverScreen {
     transition: all 0.3s ease;
@@ -241,6 +253,15 @@
   <h3>Top 5 Players</h3>
   <ul id="leaderboardList">
     <li>Loading...</li>
+  </ul>
+
+  <h3>Rules</h3>
+  <ul id="rulesList">
+    <li>Answer the math question as fast as you can.</li>
+    <li>Use the arrow buttons to punch your opponent when correct.</li>
+    <li>You lose a life if your answer is wrong or time runs out.</li>
+    <li>Last player standing wins!</li>
+    <li>Remember, after each game, press "Join Random Game" for a new code!</li>
   </ul>
 </div>
 
