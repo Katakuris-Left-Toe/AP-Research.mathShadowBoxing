@@ -50,7 +50,7 @@ function submitName() {
   const name = nameInput.value.trim();
   if (!name) return alert('Enter a name');
   playerName = name;
-  localStorage.setItem('playerName', playerName); // store in localStorage
+  localStorage.setItem('playerName', playerName);
   socket.emit('setName', { name: playerName });
 
   nameScreen.classList.add('hidden');
@@ -105,7 +105,6 @@ function submitAnswer() {
 
 submitAnswerBtn.onclick = submitAnswer;
 
-// Allow Enter key as well
 answerInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') submitAnswer();
 });
@@ -148,12 +147,11 @@ socket.on('roundStart', data => {
   submitAnswerBtn.disabled = false;
   selectedDirection = null;
 
-  // Direction blackout logic
-  const allowedDirs = data.remainingDirs[myRole]; // only remaining unused directions
+  const allowedDirs = data.remainingDirs[myRole];
   arrowBtns.forEach(btn => {
     btn.classList.remove('selected', 'disabled');
     if (!allowedDirs.includes(btn.dataset.dir)) {
-      btn.classList.add('disabled'); // black out used directions
+      btn.classList.add('disabled');
     }
   });
 });
@@ -162,8 +160,17 @@ socket.on('tick', t => {
   timerDisplay.textContent = `Time: ${t}`;
 });
 
+// --- ROUND RESULT (Updated to show both players) ---
 socket.on('roundResult', res => {
-  statusDisplay.textContent = res.hit ? 'HIT!' : 'MISS!';
+  const atk = res.attacker;
+  const def = res.defender;
+
+  statusDisplay.innerHTML = `
+    ${atk.name} (Attacker): <span style="color:${atk.correct?'green':'red'}">${atk.correct ? 'Correct' : 'Wrong'}</span>, Direction: ${atk.direction || 'None'}<br>
+    ${def.name} (Defender): <span style="color:${def.correct?'green':'red'}">${def.correct ? 'Correct' : 'Wrong'}</span>, Direction: ${def.direction || 'None'}<br>
+    <strong>${res.hit ? 'HIT!' : 'MISS!'}</strong>
+  `;
+  
   streakDisplay.textContent = `Streak: ${res.streak}`;
 });
 
@@ -171,7 +178,7 @@ socket.on('gameOver', ({ winnerName }) => {
   gameScreen.classList.add('hidden');
   gameOverScreen.classList.remove('hidden');
   document.getElementById('winnerText').textContent = `${winnerName} WINS`;
-  socket.emit('getLeaderboard'); // refresh leaderboard
+  socket.emit('getLeaderboard');
 });
 
 // --- LEADERBOARD ---
