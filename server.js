@@ -91,7 +91,7 @@ function checkEarlyResolve(code) {
   if (bothAnswered && bothChoseDirection) resolveRound(code);
 }
 
-// --- Resolve round ---
+// --- Resolve round (updated) ---
 function resolveRound(code) {
   const game = games[code];
   if (!game || !game.roundActive) return;
@@ -119,7 +119,6 @@ function resolveRound(code) {
   if (hit) {
     game.hitStreak++;
 
-    // --- BLOCK ATTACKER'S CHOSEN DIRECTION FOR BOTH PLAYERS ---
     if (game.atkDir) {
       const atkIndex = game.remainingDirs.attacker.indexOf(game.atkDir);
       if (atkIndex > -1) game.remainingDirs.attacker.splice(atkIndex, 1);
@@ -128,14 +127,12 @@ function resolveRound(code) {
       if (defIndex > -1) game.remainingDirs.defender.splice(defIndex, 1);
     }
   } else {
-    // MISS → swap roles & reset directions
     game.hitStreak = 0;
     game.attackerIndex = 1 - game.attackerIndex;
     game.remainingDirs.attacker = ['up','down','left','right'];
     game.remainingDirs.defender = ['up','down','left','right'];
   }
 
-  // --- Reset directions if all used ---
   if (game.remainingDirs.attacker.length === 0 || game.remainingDirs.defender.length === 0) {
     game.attackerIndex = 1 - game.attackerIndex;
     game.remainingDirs.attacker = ['up','down','left','right'];
@@ -143,13 +140,20 @@ function resolveRound(code) {
     game.hitStreak = 0;
   }
 
+  // --- Send detailed round result ---
   io.to(code).emit('roundResult', {
     hit,
     streak: game.hitStreak,
-    atkCorrect,
-    defCorrect,
-    atkDir: game.atkDir,
-    defDir: game.defDir,
+    attacker: {
+      name: game.names[attacker],
+      correct: atkCorrect,
+      direction: game.atkDir
+    },
+    defender: {
+      name: game.names[defender],
+      correct: defCorrect,
+      direction: game.defDir
+    },
     remainingDirs: game.remainingDirs
   });
 
